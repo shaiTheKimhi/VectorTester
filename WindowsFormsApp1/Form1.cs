@@ -13,7 +13,9 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        const int CIRCLE_TIME = 1 * 60 / 10;
+        Color[] colors = { Color.Black, Color.Green, Color.Red, Color.LightBlue, Color.Purple, Color.Yellow };
+        const int CIRCLE_TIME = 1 * 60;
+        const int FIELD_SIZE = 75;
         Bitmap bitmap;
         DateTime time;
         public Form1()
@@ -23,6 +25,7 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.BackColor = Color.White;
             time = DateTime.Now;
             this.bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = this.bitmap;
@@ -70,8 +73,26 @@ namespace WindowsFormsApp1
             double x = Math.Sqrt(Math.Pow(a, 2) / (1 + Math.Pow(a, 2)))*10;
             double y = Math.Sqrt(1 / (1 + Math.Pow(a, 2)))*10;
             int[] arr = { (int)x, (int)y };*/
-            
-            int[] arr = { (int)Math.Round(Math.Sin(angle)*40) , (int)Math.Round(Math.Cos(angle)*40) };
+            //int x = (int)Math.Round(Math.Sin(angle) * 140);
+            //int y = (int)Math.Round(Math.Cos(angle) * 140);
+            double a = Math.Sin(angle);
+            double b = Math.Cos(angle);
+           /* double x, y;
+            if(b!=0)
+
+            {
+                x = Math.Sqrt(FIELD_SIZE / ((a * a) / (b * b) + 1));
+                y = -1 * a * x / b;
+
+            }
+            else
+            {
+                x = 0;
+                y = a * FIELD_SIZE;
+            }
+            int[] arr = { (int)Math.Round(x), (int)Math.Round(y) };
+            return arr;*/
+            int[] arr = { (int)Math.Round(Math.Sin(angle)*140) , (int)Math.Round(Math.Cos(angle)*140) };
             return arr;
 
         }
@@ -95,11 +116,14 @@ namespace WindowsFormsApp1
         }
         public void draw_rect(int[] location,int size)
         {
+            Color c;
+            TimeSpan ti = DateTime.Now - time;
+            c = this.colors[(int)(ti.TotalSeconds / CIRCLE_TIME) % this.colors.Length];
             for(int i=location[0]-size;i<location[0]+size;i++)
             {
                 for(int j=location[1]-size;j<location[1]+size;j++)
                 {
-                    this.bitmap.SetPixel(i, j,Color.Black);
+                    this.bitmap.SetPixel(i, j,c);
                 }
             }
 
