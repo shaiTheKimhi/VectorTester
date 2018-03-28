@@ -13,8 +13,8 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        Color[] colors = { Color.Black, Color.Green, Color.Red, Color.LightBlue, Color.Purple, Color.Yellow };
-        const int CIRCLE_TIME = 1 * 60;
+        int vertical = 0;
+        const int CIRCLE_TIME = 1 * 60 ;
         const int FIELD_SIZE = 75;
         Bitmap bitmap;
         DateTime time;
@@ -25,26 +25,29 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.BackColor = Color.White;
             time = DateTime.Now;
             this.bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = this.bitmap;
             Thread t = new Thread(() =>
             {
-                try
+            try
+            {
+                while (true)
                 {
-                    while (true)
-                    {
-                        Thread.Sleep(10);
-                        double angle = 360 * get_ratio();
-
-                        int[] arr = circular_field(angle);
-                        arr[0] += bitmap.Width / 2;
-                        arr[1] += bitmap.Height / 2;
-                        //MessageBox.Show(arr[0].ToString() + ":" + arr[1].ToString());
-                        this.bitmap.SetPixel(arr[0], arr[1], Color.Black);
-                        Invoke((MethodInvoker)delegate () { draw_rect(arr, 5); });
-                        Invoke((MethodInvoker)delegate () { pictureBox1.Image = this.bitmap; });
+                    
+                    Thread.Sleep(10);
+                    double angle = 360 * get_ratio();
+                    angle = degrees_to_radians(angle);
+                    int[] arr = circular_field(angle);
+                    Invoke((MethodInvoker)delegate () { label1.Text = arr[0] + ":" + arr[1]; });
+                    arr[0] += bitmap.Width / 2;
+                    arr[1] += bitmap.Height / 2;
+                    int[] zero = { bitmap.Width / 2, bitmap.Height / 2 };
+                    int[] circ = { (int)(Math.Sin(angle) * 100)+bitmap.Width/2, (int)(Math.Cos(angle) * 100)+bitmap.Height/2};
+                    Invoke((MethodInvoker)delegate () { draw_rect(circ, 2); });
+                    //this.bitmap.SetPixel(arr[0], arr[1], Color.Black);
+                    Invoke((MethodInvoker)delegate () { Line(zero,arr, 5); });
+                    Invoke((MethodInvoker)delegate () { pictureBox1.Image = this.bitmap; });
                     }
                 }
                 catch(Exception exception) {
@@ -67,7 +70,7 @@ namespace WindowsFormsApp1
         /// <returns>integer array that represents the vector of the field for the specified angle</returns>
         public int[] circular_field(double angle)
         {
-            angle = degrees_to_radians(angle);
+            //angle = degrees_to_radians(angle);
             /*int l = 1;
             double a = Math.Sqrt(1 / (Math.Pow(Math.Cos(angle), 2)) -1);
             double x = Math.Sqrt(Math.Pow(a, 2) / (1 + Math.Pow(a, 2)))*10;
@@ -77,23 +80,28 @@ namespace WindowsFormsApp1
             //int y = (int)Math.Round(Math.Cos(angle) * 140);
             double a = Math.Sin(angle);
             double b = Math.Cos(angle);
-           /* double x, y;
+            double x, y;
+            /*a *= 100;
+            b *= 100;*/
             if(b!=0)
-
             {
-                x = Math.Sqrt(FIELD_SIZE / ((a * a) / (b * b) + 1));
-                y = -1 * a * x / b;
-
+                x = 1 * (b / Math.Abs(b));
+                y = a / b;
+                double length = Math.Sqrt(x * x + y * y);
+                x = x / length;
+                y = y / length;
+                y = y * 100;
+                x = x * 100;
             }
             else
             {
                 x = 0;
-                y = a * FIELD_SIZE;
+                y = -a;
             }
             int[] arr = { (int)Math.Round(x), (int)Math.Round(y) };
-            return arr;*/
-            int[] arr = { (int)Math.Round(Math.Sin(angle)*140) , (int)Math.Round(Math.Cos(angle)*140) };
             return arr;
+           /* arr = { (int)Math.Round(Math.Sin(angle)*140) , (int)Math.Round(Math.Cos(angle)*140) };
+            return arr;*/
 
         }
         /// <summary>
@@ -116,17 +124,35 @@ namespace WindowsFormsApp1
         }
         public void draw_rect(int[] location,int size)
         {
-            Color c;
-            TimeSpan ti = DateTime.Now - time;
-            c = this.colors[(int)(ti.TotalSeconds / CIRCLE_TIME) % this.colors.Length];
             for(int i=location[0]-size;i<location[0]+size;i++)
             {
                 for(int j=location[1]-size;j<location[1]+size;j++)
                 {
-                    this.bitmap.SetPixel(i, j,c);
+                    this.bitmap.SetPixel(i, j,Color.Black);
                 }
             }
 
+        }
+        public void Line(int[] start,int[] end,int size)
+        {
+            
+            if (end[0] == start[0])
+            {
+                for(int i=start[1];i<=end[1];i++)
+                {
+                    int[] location = { start[0], i };
+                    draw_rect(location, 2);
+                }
+            }
+            else
+            {
+                int slowpe = (end[1] - start[1]) / (end[0] - start[0]);
+                for(int i=start[0];i<=end[0];i++)
+                {
+                    int[] location = { i, start[1] + slowpe * (i-start[0]) };
+                    draw_rect(location, 2);
+                }
+            }
         }
     }
 }
