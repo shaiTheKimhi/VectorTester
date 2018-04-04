@@ -44,7 +44,7 @@ namespace WindowsFormsApp1
                     while (true)
                     {
                         //removes older vectors
-                        //Clean();
+                        Clean();
                         double angle = 360 * get_ratio();
                         angle = degrees_to_radians(angle);
                         int[] arr = circular_field(angle);
@@ -60,7 +60,7 @@ namespace WindowsFormsApp1
 
                         //Printing the circle
                         
-                        Invoke((MethodInvoker)delegate () { draw_rect(circ, 4, Color.Black); });
+                        Invoke((MethodInvoker)delegate () { draw_rect(circ, 2, Color.Black); });
                         Thread.Sleep(100);
                         }
                     }
@@ -85,19 +85,9 @@ namespace WindowsFormsApp1
         /// <returns>integer array that represents the vector of the field for the specified angle</returns>
         public int[] circular_field(double angle)
         {
-            //angle = degrees_to_radians(angle);
-            /*int l = 1;
-            double a = Math.Sqrt(1 / (Math.Pow(Math.Cos(angle), 2)) -1);
-            double x = Math.Sqrt(Math.Pow(a, 2) / (1 + Math.Pow(a, 2)))*10;
-            double y = Math.Sqrt(1 / (1 + Math.Pow(a, 2)))*10;
-            int[] arr = { (int)x, (int)y };*/
-            //int x = (int)Math.Round(Math.Sin(angle) * 140);
-            //int y = (int)Math.Round(Math.Cos(angle) * 140);
             double a = Math.Sin(angle);
             double b = Math.Cos(angle);
             double x, y;
-            /*a *= 100;
-            b *= 100;*/
             if(b!=0)
             {
                 int sign = (int)(b / Math.Abs(b));
@@ -116,8 +106,6 @@ namespace WindowsFormsApp1
             }
             int[] arr = { (int)Math.Round(x), (int)Math.Round(y) };
             return arr;
-           /* arr = { (int)Math.Round(Math.Sin(angle)*140) , (int)Math.Round(Math.Cos(angle)*140) };
-            return arr;*/
 
         }
         /// <summary>
@@ -155,7 +143,7 @@ namespace WindowsFormsApp1
                 for(int j=location[1]-size;j<location[1]+size;j++)
                 {
                     this.bitmap.SetPixel(i, j,c);
-                    if(!clean)
+                    if(clean)
                     {
                         int[] pos = { i, j };
                         cleanM.WaitOne();
